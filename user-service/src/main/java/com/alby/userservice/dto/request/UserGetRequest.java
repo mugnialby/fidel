@@ -1,12 +1,12 @@
 package com.alby.userservice.dto.request;
 
-import com.alby.userservice.entity.Users;
-
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Data
 @AllArgsConstructor
@@ -14,9 +14,7 @@ import lombok.NonNull;
 @Builder
 public class UserGetRequest {
     
-    @NonNull
+    @NotNull
+    @Digits(integer = 12, fraction = 0)
     private Long userId;
-
-    @NonNull
-    private Users currentUser;
 }

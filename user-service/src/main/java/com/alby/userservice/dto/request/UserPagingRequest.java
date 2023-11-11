@@ -1,6 +1,8 @@
 package com.alby.userservice.dto.request;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +14,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserPagingRequest {
     
-    @Nonnull
+    @NotNull
+    @Digits(integer = 6, fraction = 0)
     private Integer page;
 
-    @Nonnull
+    @NotNull
+    @Digits(integer = 6, fraction = 0)
     private Integer pageSize;
 }

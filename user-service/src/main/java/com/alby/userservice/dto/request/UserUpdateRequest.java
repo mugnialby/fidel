@@ -1,32 +1,45 @@
 package com.alby.userservice.dto.request;
 
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UserUpdateRequest {
+
+    @NotNull
+    @Digits(integer = 12, fraction = 0)
+    private Long userId;
     
-    @Size(max = 64)
+    @Length(max = 64)
     private String username;
 
-    @Size(max = 128)
+    @Length(max = 128)
     private String password;
 
-    @Size(max = 128)
+    @Length(max = 128)
     private String firstName;
 
-    @Size(max = 128)
+    @Length(max = 128)
     private String lastName;
 
-    @Size(max = 64)
+    @Length(max = 64)
     private String email;
 
-    @Size(max = 1)
+    @Length(max = 1)
     private String status;
+
+    @NotNull
+    @Digits(integer = 12, fraction = 0)
+    private Long managerId;
+
+    @NotBlank
+    @Length(max = 64)
+    private String modifiedBy;
 }

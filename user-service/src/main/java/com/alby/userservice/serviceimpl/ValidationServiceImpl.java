@@ -16,14 +16,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ValidationServiceImpl implements ValidationService {
 
-    private Validator validator;
+    private final Validator validator;
 
     @Override
     public void validate(Object request) {
-
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(request);
-        if (constraintViolations.size() != 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        
+        if (!constraintViolations.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
     
 }

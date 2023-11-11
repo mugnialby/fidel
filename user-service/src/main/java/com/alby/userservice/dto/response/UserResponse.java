@@ -21,5 +21,7 @@ public class UserResponse {
 
     private String email;
 
+    private Long managerId;
+
     private String status;
 }

@@ -12,13 +12,13 @@ import com.alby.userservice.dto.response.WebResponse;
 
 public interface UserService {
     
-    public WebResponse<List<UserResponse>> getAll(UserPagingRequest request);
+    WebResponse<List<UserResponse>> getAll(UserPagingRequest request);
 
-    public WebResponse<UserResponse> get(UserGetRequest request);
+    WebResponse<UserResponse> get(UserGetRequest request);
 
-    public WebResponse<UserResponse> add(UserAddRequest request);
+    WebResponse<UserResponse> add(UserAddRequest request);
 
-    public WebResponse<UserResponse> update(UserUpdateRequest request);
+    WebResponse<UserResponse> update(UserUpdateRequest request);
 
-    public WebResponse<String> delete(UserDeleteRequest request);
+    WebResponse<String> delete(UserDeleteRequest request);
 }

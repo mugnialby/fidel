@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.alby.userservice.security.BCrypt;
+import com.alby.userservice.util.UserUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -36,17 +38,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public WebResponse<List<UserResponse>> getAll(UserPagingRequest request) {
+        validationService.validate(request);
+
         Page<Users> users = userRepository.findAll(
             PageRequest.of(
-                page.orElse(0), 
-                size.orElse(10), 
+                request.getPage(),
+                request.getPageSize(),
                 Sort.by("firstName")
                     .ascending()
             ));
 
         List<UserResponse> userResponses = users
             .stream()
-            .map(data -> new UsersUtil().mapUserToUserResponse(data))
+            .map(UserUtil::mapUserToUserResponse)
             .collect(Collectors.toList());
 
         return WebResponse.<List<UserResponse>> builder()
@@ -61,8 +65,8 @@ public class UserServiceImpl implements UserService {
 
         return WebResponse.<UserResponse> builder()
             .message("OK")
-            .data(userRepository.findById(request)   
-                .map(data -> new UsersUtil().mapUserToUserResponse(data))
+            .data(userRepository.findById(request.getUserId())
+                .map(UserUtil::mapUserToUserResponse)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
             .build();
     }
@@ -73,9 +77,15 @@ public class UserServiceImpl implements UserService {
         validationService.validate(request);
 
         if (userRepository.existsByUsername(request.getUsername()))
-        throw new ResponseStatusException(HttpStatus.CONFLICT);
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
 
-        userRepository.save(new UsersUtil().mapAddRequestToUsers(request));
+        Users user = UserUtil.mapAddRequestToUsers(request);
+        userRepository.save(user);
+
+        return WebResponse.<UserResponse> builder()
+                .message("OK")
+                .data(UserUtil.mapUserToUserResponse(user))
+                .build();
     }
 
     @Override
@@ -83,7 +93,7 @@ public class UserServiceImpl implements UserService {
     public WebResponse<UserResponse> update(UserUpdateRequest request) {
         validationService.validate(request);
         
-        User userFromDb = userRepository.findById(userId)
+        Users userFromDb = userRepository.findById(request.getUserId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
             
         if (Objects.nonNull(request.getUsername())) {
@@ -110,25 +120,34 @@ public class UserServiceImpl implements UserService {
         if (Objects.nonNull(request.getStatus())) {
             userFromDb.setStatus(request.getStatus());
         }
+
+        if (Objects.nonNull(request.getManagerId())) {
+            userFromDb.setManagerId(request.getManagerId());
+        }
     
         userRepository.save(userFromDb);
 
         return WebResponse.<UserResponse> builder()
             .message("OK")
-            .data(new UsersUtil().mapUserToUserResponse(userFromDb))
+            .data(UserUtil.mapUserToUserResponse(userFromDb))
             .build();
     }
 
     @Override
     @Transactional
     public WebResponse<String> delete(UserDeleteRequest request) {
-        validationService.validate(userId);
+        validationService.validate(request);
 
-        User user = userRepository.findById(userId)
+        Users user = userRepository.findById(request.getUserId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         user.setStatus("N");
+        user.setModifiedBy(request.getModifiedBy());
         userRepository.save(user);
+
+        return WebResponse.<String> builder()
+                .data("OK")
+                .build();
     }
     
 }
