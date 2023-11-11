@@ -11,7 +11,7 @@ public class EmailUtil {
 
     public static Email mapAddRequestToFeedback(EmailSendRequest request) {
         return Email.builder()
-                .to(request.getTo())
+                .sendTo(request.getSendTo())
                 .subjects(request.getSubject())
                 .contents(request.getContents())
                 .build();
